@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  mlx_app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app                        # Монтируем текущую папку внутрь контейнера
+    working_dir: /app                # Папка, где выполняется bash по умолчанию
+    environment:
+      - DISPLAY=host.docker.internal:0           # Прокидываем DISPLAY из хоста
+    network_mode: host               # Нужен для X11 на Mac с XQuartz
