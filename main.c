@@ -16,8 +16,7 @@ int main(int argc, char **argv)
     }
     print_map_height(map);
     
-    test_mlx();
-
+    draw_image(map);
     free_map(map);
 
 
