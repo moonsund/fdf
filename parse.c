@@ -1,11 +1,10 @@
 #include "fdf.h"
 
-static t_map *convert_lines_to_map(t_list *lines);
+static bool convert_lines_to_map(t_list *lines, t_map *map);
 
-t_map *parse_map(const char *file_path)
+bool parse_map(const char *file_path, t_map *map)
 {
     int fd;
-    t_map *map;
     char *line;
     t_list *lines;
 
@@ -14,19 +13,22 @@ t_map *parse_map(const char *file_path)
     if (fd == -1)
     {
         perror("The file is not opened.");
-        return (NULL);
+        return (false);
     }
     while ((line = get_next_line(fd)))
 	    ft_lstadd_back(&lines, ft_lstnew(line));
     close(fd);
-    map = convert_lines_to_map(lines);
+    if (!convert_lines_to_map(lines, map))
+    {
+        ft_lstclear(&lines, free);
+        return (false);
+    }
     ft_lstclear(&lines, free);
-    return (map);
+    return (true);
 }
 
-static t_map *convert_lines_to_map(t_list *lines)
+static bool convert_lines_to_map(t_list *lines, t_map *map)
 {
-    t_map *map;
     int height;
     char **split;
     int **height_map;
@@ -36,9 +38,6 @@ static t_map *convert_lines_to_map(t_list *lines)
     int k;
     t_list *curr;
 
-    map = malloc(sizeof(t_map));
-    if (!map)
-        return (NULL);
     height = ft_lstsize(lines);
     height_map = malloc(height * sizeof(int *));
     width = -1;
@@ -57,11 +56,17 @@ static t_map *convert_lines_to_map(t_list *lines)
             ft_putstr_fd("\nERROR: the map is corrupted.\n\n", 2);
             free_array(split);
             free_map_height(height_map, height); // возможно стоит объединить с free(map)
-            free(map);
-            return (NULL);
+            return (false);
         }
         j = 0;
         height_map[i] = malloc(width * sizeof(int));
+            if (!height_map[i])
+            {
+                free_array(split);
+                free_map_height(height_map, height);
+                return (false);
+            }
+
         while (j < width)
         {
             height_map[i][j] = ft_atoi(split[j]);
@@ -75,5 +80,5 @@ static t_map *convert_lines_to_map(t_list *lines)
     map->height_map = height_map;
     map->width = width;
     map->height = height;
-    return (map);
+    return (true);
 }

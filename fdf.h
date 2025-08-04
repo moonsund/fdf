@@ -10,13 +10,14 @@
 #include <stdlib.h> // free()
 #include <fcntl.h> // open()
 #include <math.h>
+#include <stdbool.h>
 
 
 typedef struct s_map
 {
     int     **height_map; 
     int     width;       
-    int     height;      
+    int     height;  
 }   t_map;
 
 typedef struct s_point
@@ -41,24 +42,51 @@ typedef struct s_img
 	int		line_len;
 } t_img;
 
+
+typedef struct s_lims
+{
+    int max_zoom;
+    int min_zoom;
+} t_lims;
+
+
 typedef struct s_fdf
 {
     void *mlx_ptr;
     void *win_ptr;
     t_map *map;
     int zoom;
+    int max_zoom;
+    int min_zoom;
     int scale;
-    int margin;
+    int max_scale;
     t_proj_type projection;
     t_img image;
     int shift_x;
     int shift_y;
     int z_scale;
+    int max_z_scale;
+    t_lims limits;
 } t_fdf;
 
 
-t_map *parse_map(const char *file_path);
-void draw_image(t_map *map); 
+
+
+
+bool parse_map(const char *file_path, t_map *map);
+bool init_window(t_map *map, t_fdf *fdf);
+void draw_image(t_fdf *fdf);
+void to_isometric(int *x, int *y, int z);
+void to_paralel(int *x, int *y, int z);
+
+
+//
+int update_view_settings(int keycode, t_fdf *fdf);
+
+
+//
+// int mlx_hook(fdf->win_ptr, 17, 0, handle_close, fdf); // крестик
+// int mlx_key_hook(fdf->win_ptr, handle_key, fdf);      // клавиши
 
 
 // utils

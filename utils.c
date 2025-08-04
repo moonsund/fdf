@@ -53,3 +53,4 @@ void print_map_height(t_map *map)
 		i++;
 	}
 }
+
