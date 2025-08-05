@@ -9,9 +9,11 @@ bool init_window(t_map *map, t_fdf *fdf)
 {    
     fdf->map = map; 
     fdf->zoom = 10;
-    fdf->z_scale = 2;
+	fdf->limits.min_zoom = 10;
     fdf->limits.max_zoom = 30;
-    fdf->limits.min_zoom = 10;
+    fdf->z_scale = 2;
+	fdf->limits.min_z_scale = 1;
+	fdf->limits.max_z_scale = 10;
     fdf->projection = ISO;
     center_projection(fdf);
 

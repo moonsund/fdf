@@ -47,6 +47,8 @@ typedef struct s_lims
 {
     int max_zoom;
     int min_zoom;
+    int min_z_scale;
+    int max_z_scale;
 } t_lims;
 
 
@@ -56,16 +58,12 @@ typedef struct s_fdf
     void *win_ptr;
     t_map *map;
     int zoom;
-    int max_zoom;
-    int min_zoom;
     int scale;
-    int max_scale;
+    int z_scale;
     t_proj_type projection;
     t_img image;
     int shift_x;
     int shift_y;
-    int z_scale;
-    int max_z_scale;
     t_lims limits;
 } t_fdf;
 
@@ -74,26 +72,31 @@ typedef struct s_fdf
 
 
 bool parse_map(const char *file_path, t_map *map);
+
+// init
 bool init_window(t_map *map, t_fdf *fdf);
+void center_projection(t_fdf *fdf);
+
+// draw
 void draw_image(t_fdf *fdf);
 void to_isometric(int *x, int *y, int z);
 void to_paralel(int *x, int *y, int z);
 
+// events
+void handle_events(t_fdf *fdf);
 
-//
-int update_view_settings(int keycode, t_fdf *fdf);
-
-
-//
-// int mlx_hook(fdf->win_ptr, 17, 0, handle_close, fdf); // крестик
-// int mlx_key_hook(fdf->win_ptr, handle_key, fdf);      // клавиши
-
+// keys
+void increase_zoom(t_fdf *fdf, bool *need_redraw);
+void decrease_zoom(t_fdf *fdf, bool *need_redraw);
+void increase_z_scale(t_fdf *fdf, bool *need_redraw);
+void decrease_z_scale(t_fdf *fdf, bool *need_redraw);
+void switch_projection(t_fdf *fdf, bool *need_redraw);
 
 // utils
 void free_array(char **array);
 void free_map_height(int **height_map, int height);
 void free_map(t_map *map);
-void print_map_height(t_map *map); // to be deleted
+void cleanup(t_fdf *fdf);
 
 
 

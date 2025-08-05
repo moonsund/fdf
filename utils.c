@@ -34,23 +34,13 @@ void free_map(t_map *map)
     free(map);
 }
 
-
-void print_map_height(t_map *map)
+void cleanup(t_fdf *fdf)
 {
-	int i;
-	int j;
-
-	i = 0;
-	while (i < map->height)
-	{
-		j = 0;
-		while (j < map->width)
-		{	
-			printf("%i ", map->height_map[i][j]);
-			j++;
-		}
-		printf("\n");
-		i++;
-	}
+	if (fdf->image.img_ptr)
+        mlx_destroy_image(fdf->mlx_ptr, fdf->image.img_ptr);
+    if (fdf->win_ptr)
+        mlx_destroy_window(fdf->mlx_ptr, fdf->win_ptr);
+    mlx_destroy_display(fdf->mlx_ptr);
+    if (fdf->mlx_ptr)
+        free(fdf->mlx_ptr);
 }
-
