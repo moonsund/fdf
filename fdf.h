@@ -1,24 +1,35 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   fdf.h                                              :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: lorlov <lorlov@student.42berlin.de>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/05 17:17:20 by lorlov            #+#    #+#             */
+/*   Updated: 2025/08/05 17:48:12 by lorlov           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef FDF_H
-#define FDF_H
+# define FDF_H
 
-#include "libft/libft.h"
-#include "minilibx/mlx.h"
-#include <X11/keysym.h>
+# include "libft/libft.h"
+# include "minilibx/mlx.h"
+# include <X11/keysym.h>
 
-#include <stdio.h> // size_t
-#include <unistd.h> // write() close()
-#include <stdlib.h> // free()
-#include <fcntl.h> // open()
-#include <math.h>
-#include <stdbool.h>
-
+# include <stdio.h> // size_t
+# include <unistd.h> // write() close()
+# include <stdlib.h> // free()
+# include <fcntl.h> // open()
+# include <math.h>
+# include <stdbool.h>
 
 typedef struct s_map
 {
-    int     **height_map; 
-    int     width;       
-    int     height;  
-}   t_map;
+	int	**height_map; 
+	int	width;       
+	int	height;  
+}	t_map;
 
 typedef struct s_point
 {
@@ -40,65 +51,57 @@ typedef struct s_img
 	int		bits_per_pixel;
 	int		endian;
 	int		line_len;
-} t_img;
-
+}	t_img;
 
 typedef struct s_lims
 {
-    int max_zoom;
-    int min_zoom;
-    int min_z_scale;
-    int max_z_scale;
-} t_lims;
+	int	max_zoom;
+	int	min_zoom;
+	int	min_z_scale;
+	int	max_z_scale;
+}	t_lims;
 
 
 typedef struct s_fdf
 {
-    void *mlx_ptr;
-    void *win_ptr;
-    t_map *map;
-    int zoom;
-    int scale;
-    int z_scale;
-    t_proj_type projection;
-    t_img image;
-    int shift_x;
-    int shift_y;
-    t_lims limits;
-} t_fdf;
+	void		*mlx_ptr;
+	void		*win_ptr;
+	t_map		*map;
+	int			zoom;
+	int			scale;
+	int			z_scale;
+	t_proj_type	projection;
+	t_img		image;
+	int			shift_x;
+	int			shift_y;
+	t_lims		limits;
+}	t_fdf;
 
-
-
-
-
-bool parse_map(const char *file_path, t_map *map);
+bool	parse_map(const char *file_path, t_map *map);
 
 // init
-bool init_window(t_map *map, t_fdf *fdf);
-void center_projection(t_fdf *fdf);
+bool	init_window(t_map *map, t_fdf *fdf);
+void	center_projection(t_fdf *fdf);
 
 // draw
-void draw_image(t_fdf *fdf);
-void to_isometric(int *x, int *y, int z);
-void to_paralel(int *x, int *y, int z);
+void	draw_image(t_fdf *fdf);
+void	to_isometric(int *x, int *y, int z);
+void	to_paralel(int *x, int *y, int z);
 
 // events
-void handle_events(t_fdf *fdf);
+void	handle_events(t_fdf *fdf);
 
 // keys
-void increase_zoom(t_fdf *fdf, bool *need_redraw);
-void decrease_zoom(t_fdf *fdf, bool *need_redraw);
-void increase_z_scale(t_fdf *fdf, bool *need_redraw);
-void decrease_z_scale(t_fdf *fdf, bool *need_redraw);
-void switch_projection(t_fdf *fdf, bool *need_redraw);
+void	increase_zoom(t_fdf *fdf, bool *need_redraw);
+void	decrease_zoom(t_fdf *fdf, bool *need_redraw);
+void	increase_z_scale(t_fdf *fdf, bool *need_redraw);
+void	decrease_z_scale(t_fdf *fdf, bool *need_redraw);
+void	switch_projection(t_fdf *fdf, bool *need_redraw);
 
 // utils
-void free_array(char **array);
-void free_map_height(int **height_map, int height);
-void free_map(t_map *map);
-void cleanup(t_fdf *fdf);
-
-
-
+void	free_array(char **array);
+void	free_map_height(int **height_map, int height);
+void	free_map(t_map *map);
+void	cleanup(t_fdf *fdf);
 
 #endif

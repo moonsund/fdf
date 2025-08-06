@@ -1,21 +1,33 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   utils.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: lorlov <lorlov@student.42berlin.de>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/05 17:33:46 by lorlov            #+#    #+#             */
+/*   Updated: 2025/08/05 17:44:07 by lorlov           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "fdf.h"
 
-void free_array(char **array)
+void	free_array(char **array)
 {
-    int i;
+	int	i;
 
-    i = 0;
-    while (array[i])
-    {
-        free(array[i]);
-        i++;
-    }
-    free(array);
+	i = 0;
+	while (array[i])
+	{
+		free(array[i]);
+		i++;
+	}
+	free(array);
 }
 
-void free_map_height(int **height_map, int height)
+void	free_map_height(int **height_map, int height)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	while (i < height)
@@ -26,21 +38,21 @@ void free_map_height(int **height_map, int height)
 	free(height_map);
 }
 
-void free_map(t_map *map)
+void	free_map(t_map *map)
 {
-    if (!map)
-        return;
-    free_map_height(map->height_map, map->height);
-    free(map);
+	if (!map)
+		return ;
+	free_map_height(map->height_map, map->height);
+	free(map);
 }
 
-void cleanup(t_fdf *fdf)
+void	cleanup(t_fdf *fdf)
 {
 	if (fdf->image.img_ptr)
-        mlx_destroy_image(fdf->mlx_ptr, fdf->image.img_ptr);
-    if (fdf->win_ptr)
-        mlx_destroy_window(fdf->mlx_ptr, fdf->win_ptr);
-    mlx_destroy_display(fdf->mlx_ptr);
-    if (fdf->mlx_ptr)
-        free(fdf->mlx_ptr);
+		mlx_destroy_image(fdf->mlx_ptr, fdf->image.img_ptr);
+	if (fdf->win_ptr)
+		mlx_destroy_window(fdf->mlx_ptr, fdf->win_ptr);
+	mlx_destroy_display(fdf->mlx_ptr);
+	if (fdf->mlx_ptr)
+		free(fdf->mlx_ptr);
 }
