@@ -6,20 +6,16 @@
 /*   By: lorlov <lorlov@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 17:16:56 by lorlov            #+#    #+#             */
-/*   Updated: 2025/08/05 17:40:23 by lorlov           ###   ########.fr       */
+/*   Updated: 2025/08/08 15:33:04 by lorlov           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fdf.h"
 
-#define WIN_WIDTH 1280
-#define WIN_HEIGHT 800
-
-static void	draw_line_between(int x0, int y0, int x1, int y1, t_fdf *fdf);
+static void	draw_line_between(t_line line, t_fdf *fdf);
 static void	project_point(t_point *p, t_fdf *fdf);
-void		to_isometric(int *x, int *y, int z);
-void		to_paralel(int *x, int *y, int z);
-static void	bresenham(int x0, int y0, int x1, int y1, t_fdf *fdf);
+static void	bresenham(t_line l, t_fdf *fdf);
+static void	bresenham_step(t_line *l, int *err, t_bres_step step);
 
 void	draw_image(t_fdf *fdf)
 {
@@ -33,34 +29,31 @@ void	draw_image(t_fdf *fdf)
 		while (x < fdf->map->width)
 		{
 			if (x < fdf->map->width - 1)
-				draw_line_between(x, y, x + 1, y, fdf);
+				draw_line_between((t_line){x, y, x + 1, y}, fdf);
 			if (y < fdf->map->height - 1)
-				draw_line_between(x, y, x, y + 1, fdf);
+				draw_line_between((t_line){x, y, x, y + 1}, fdf);
 			x++;
 		}
 		y++;
 	}
-	mlx_put_image_to_window(fdf->mlx_ptr, fdf->win_ptr, 
+	mlx_put_image_to_window(fdf->mlx_ptr, fdf->win_ptr,
 		fdf->image.img_ptr, 0, 0);
 }
 
-static void	draw_line_between(int x0, int y0, int x1, int y1, t_fdf *fdf)
+static void	draw_line_between(t_line line, t_fdf *fdf)
 {
 	t_point	a;
 	t_point	b;
 
-	a.x = x0;
-	a.y = y0;
-	a.z = fdf->map->height_map[y0][x0];
-
-	b.x = x1;
-	b.y = y1;
-	b.z = fdf->map->height_map[y1][x1];
-
+	a.x = line.x0;
+	a.y = line.y0;
+	a.z = fdf->map->map_heights[line.y0][line.x0];
+	b.x = line.x1;
+	b.y = line.y1;
+	b.z = fdf->map->map_heights[line.y1][line.x1];
 	project_point(&a, fdf);
 	project_point(&b, fdf);
-
-	bresenham(a.x, a.y, b.x, b.y, fdf);
+	bresenham((t_line){a.x, a.y, b.x, b.y}, fdf);
 }
 
 static void	project_point(t_point *p, t_fdf *fdf)
@@ -68,56 +61,51 @@ static void	project_point(t_point *p, t_fdf *fdf)
 	p->x *= fdf->zoom;
 	p->y *= fdf->zoom;
 	p->z *= fdf->z_scale;
-
-	if (fdf->projection == ISO)
-		to_isometric(&p->x, &p->y, p->z);
-	else
-		to_paralel(&p->x, &p->y, p->z);
+	apply_projection(&p->x, &p->y, p->z, fdf);
 	p->x += fdf->shift_x;
 	p->y += fdf->shift_y;
 }
 
-void	to_isometric(int *x, int *y, int z)
+static void	bresenham(t_line l, t_fdf *fdf)
 {
-	int	prev_x = *x;
-	int	prev_y = *y;
-	*x = (prev_x - prev_y) * cos(0.523599);    // 30°
-	*y = (prev_x + prev_y) * sin(0.523599) - z;
-}
+	int	dx;
+	int	dy;
+	int	sx;
+	int	sy;
+	int	err;
 
-void	to_paralel(int *x, int *y, int z)
-{
-	int	prev_x = *x;
-	int	prev_y = *y;
-	
-	*x = prev_x;
-	*y = prev_y - z;
-}
-
-static void	bresenham(int x0, int y0, int x1, int y1, t_fdf *fdf)
-{
-	int	dx = abs(x1 - x0);
-	int	dy = abs(y1 - y0);
-	int	sx = (x0 < x1) ? 1 : -1;
-	int	sy = (y0 < y1) ? 1 : -1;
-	int	err = dx - dy;
-	int bytes_per_pixel = fdf->image.bits_per_pixel / 8;
-
-	while (x0 != x1 || y0 != y1)
+	dx = abs(l.x1 - l.x0);
+	dy = abs(l.y1 - l.y0);
+	if (l.x0 < l.x1)
+		sx = 1;
+	else
+		sx = -1;
+	if (l.y0 < l.y1)
+		sy = 1;
+	else
+		sy = -1;
+	err = dx - dy;
+	while (l.x0 != l.x1 || l.y0 != l.y1)
 	{
-		char *pixel = fdf->image.img_pixels_ptr + (y0 * fdf->image.line_len + x0 * bytes_per_pixel);
-		*(unsigned int *)pixel = 0xFFFFFF; // белый
+		put_pixel(fdf, l.x0, l.y0, 0xFFFFFF);
+		bresenham_step(&l, &err, (t_bres_step){dx, dy, sx, sy});
+	}
+	put_pixel(fdf, l.x1, l.y1, 0xFFFFFF);
+}
 
-		int	e2 = 2 * err;
-		if (e2 > -dy)
-		{
-			err -= dy;
-			x0 += sx;
-		}
-		if (e2 < dx)
-		{
-			err += dx;
-			y0 += sy;
-		}
+static void	bresenham_step(t_line *l, int *err, t_bres_step step)
+{
+	int	e2;
+
+	e2 = 2 * (*err);
+	if (e2 > -step.dy)
+	{
+		*err -= step.dy;
+		l->x0 += step.sx;
+	}
+	if (e2 < step.dx)
+	{
+		*err += step.dx;
+		l->y0 += step.sy;
 	}
 }

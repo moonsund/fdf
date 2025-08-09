@@ -6,7 +6,7 @@
 /*   By: lorlov <lorlov@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 17:17:05 by lorlov            #+#    #+#             */
-/*   Updated: 2025/08/05 17:45:47 by lorlov           ###   ########.fr       */
+/*   Updated: 2025/08/08 12:53:38 by lorlov           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,11 +57,11 @@ static void	redraw(t_fdf *fdf)
 {
 	if (fdf->image.img_ptr)
 		mlx_destroy_image(fdf->mlx_ptr, fdf->image.img_ptr);
-	center_projection(fdf);
+	get_shifts(fdf);
 	fdf->image.img_ptr = mlx_new_image(fdf->mlx_ptr, WIN_WIDTH, WIN_HEIGHT);
-	fdf->image.img_pixels_ptr = mlx_get_data_addr(fdf->image.img_ptr,
-		&fdf->image.bits_per_pixel,
-		&fdf->image.line_len,
-		&fdf->image.endian);
+	fdf->image.img_pixels_ptr = mlx_get_data_addr(fdf->image.img_ptr, 
+			&fdf->image.bits_per_pixel,
+			&fdf->image.line_len,
+			&fdf->image.endian);
 	draw_image(fdf);
 }

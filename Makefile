@@ -14,7 +14,7 @@ HEADER = fdf.h
 INCLUDES = -I. -I$(LIBFT_DIR) -I$(MLX_DIR)
 LIBS = -Llibft -lft -Lminilibx -lmlx -lX11 -lXext -lm
 
-SRCS = main.c parse.c init_window.c draw.c events.c keys.c utils.c
+SRCS = main.c parse.c init_window.c draw.c draw1.c events.c keys.c utils.c
 OBJS = $(SRCS:.c=.o)
 
 

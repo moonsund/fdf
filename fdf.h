@@ -6,7 +6,7 @@
 /*   By: lorlov <lorlov@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 17:17:20 by lorlov            #+#    #+#             */
-/*   Updated: 2025/08/05 17:48:12 by lorlov           ###   ########.fr       */
+/*   Updated: 2025/08/08 15:31:36 by lorlov           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,9 +26,9 @@
 
 typedef struct s_map
 {
-	int	**height_map; 
-	int	width;       
-	int	height;  
+	int	**map_heights; 
+	int	width;
+	int	height;
 }	t_map;
 
 typedef struct s_point
@@ -37,6 +37,22 @@ typedef struct s_point
 	int	y;
 	int	z;
 }	t_point;
+
+typedef struct s_line
+{
+	int	x0;
+	int	y0;
+	int	x1;
+	int	y1;
+}	t_line;
+
+typedef struct s_bres_step
+{
+	int	dx; 
+	int	dy;
+	int	sx;
+	int	sy;
+}	t_bres_step;
 
 typedef enum e_proj_type
 {
@@ -59,8 +75,11 @@ typedef struct s_lims
 	int	min_zoom;
 	int	min_z_scale;
 	int	max_z_scale;
+	int	min_x;
+	int	min_y;
+	int	max_x;
+	int	max_y;
 }	t_lims;
-
 
 typedef struct s_fdf
 {
@@ -81,12 +100,12 @@ bool	parse_map(const char *file_path, t_map *map);
 
 // init
 bool	init_window(t_map *map, t_fdf *fdf);
-void	center_projection(t_fdf *fdf);
+void	get_shifts(t_fdf *fdf);
+void	apply_projection(int *x, int *y, int z, t_fdf *fdf);
 
 // draw
 void	draw_image(t_fdf *fdf);
-void	to_isometric(int *x, int *y, int z);
-void	to_paralel(int *x, int *y, int z);
+void	put_pixel(t_fdf *fdf, int x, int y, unsigned int color);
 
 // events
 void	handle_events(t_fdf *fdf);
@@ -100,7 +119,7 @@ void	switch_projection(t_fdf *fdf, bool *need_redraw);
 
 // utils
 void	free_array(char **array);
-void	free_map_height(int **height_map, int height);
+void	free_map_heights(int **height_map, int height);
 void	free_map(t_map *map);
 void	cleanup(t_fdf *fdf);
 
