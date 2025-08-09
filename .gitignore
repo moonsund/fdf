@@ -1,0 +1,29 @@
+# Ignore the project executable
+fdf
+
+# Ignore object files
+*.o
+
+# Ignore compiled static libraries
+libft/libft.a
+minilibx/libmlx.a
+
+# Ignore maps
+./maps
+
+# Ignore temporary files and cache
+*.swp
+*.swo
+*.tmp
+*.log
+.DS_Store
+
+# Ignore IDE configuration folders
+.vscode/
+.idea/
+
+# Ignore backup files
+*~
+
+
+
