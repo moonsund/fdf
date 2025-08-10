@@ -6,7 +6,7 @@
 /*   By: lorlov <lorlov@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 17:22:24 by lorlov            #+#    #+#             */
-/*   Updated: 2025/08/08 12:37:35 by lorlov           ###   ########.fr       */
+/*   Updated: 2025/08/10 15:33:56 by lorlov           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ void	increase_zoom(t_fdf *fdf, bool *need_redraw)
 {
 	int	new_zoom;
 
-	new_zoom = fdf->zoom + 2;
+	new_zoom = fdf->zoom + 1;
 	if (new_zoom > fdf->limits.max_zoom)
 		new_zoom = fdf->limits.max_zoom;
 	if (new_zoom != fdf->zoom) 
@@ -30,7 +30,7 @@ void	decrease_zoom(t_fdf *fdf, bool *need_redraw)
 {
 	int	new_zoom;
 
-	new_zoom = fdf->zoom - 2;
+	new_zoom = fdf->zoom - 1;
 	if (new_zoom < fdf->limits.min_zoom)
 		new_zoom = fdf->limits.min_zoom;
 	if (new_zoom != fdf->zoom) 

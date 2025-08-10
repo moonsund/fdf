@@ -6,7 +6,7 @@
 /*   By: lorlov <lorlov@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/13 15:48:30 by lorlov            #+#    #+#             */
-/*   Updated: 2025/07/21 20:48:06 by lorlov           ###   ########.fr       */
+/*   Updated: 2025/08/10 02:09:16 by lorlov           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,10 +35,7 @@ static char	*trim_stash(char *stash)
 	while (stash[i] && stash[i] != '\n')
 		i++;
 	if (!stash[i])
-	{
-		free(stash);
-		return (NULL);
-	}
+		return (free(stash), NULL);
 	new_stash = ft_strdup(stash + i + 1);
 	free(stash);
 	return (new_stash);
@@ -50,29 +47,25 @@ static char	*read_and_append(int fd, char *stash)
 	char	*tmp;
 	ssize_t	bytes;
 
-	buf = (char *)malloc(10 + 1);
+	buf = (char *)malloc(BUFFER_SIZE + 1);
 	if (!buf)
-		return (NULL);
+		return (free(stash), (char *)NULL);
+	if (!stash) 
+	{
+        stash = ft_strdup("");
+        if (!stash)
+            return (free(buf), NULL);
+    }
 	bytes = 1;
-	if (!stash)
-	stash = ft_strdup("");
 	while (!ft_strchr(stash, '\n') && bytes > 0)
 	{
-		bytes = read(fd, buf, 10);
+		bytes = read(fd, buf, BUFFER_SIZE);
 		if (bytes < 0)
-		{
-			free(buf);
-			free(stash);
-			return (NULL);
-		}
+			return (free(buf), free(stash), NULL);
 		buf[bytes] = '\0';
 		tmp = ft_strjoin(stash, buf);
 		if (!tmp)
-		{
-			free(buf);
-			free(stash);
-			return (NULL);
-		}
+			return (free(buf), free(stash), NULL);
 		free(stash);
 		stash = tmp;
 	}
@@ -85,7 +78,7 @@ char	*get_next_line(int fd)
 	static char	*stash;
 	char		*line;
 
-	if (fd < 0 || 10 <= 0)
+	if (fd < 0 || BUFFER_SIZE <= 0)
 	{
 		return (NULL);
 	}

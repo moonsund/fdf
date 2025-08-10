@@ -6,7 +6,7 @@
 /*   By: lorlov <lorlov@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 17:18:58 by lorlov            #+#    #+#             */
-/*   Updated: 2025/08/08 13:19:33 by lorlov           ###   ########.fr       */
+/*   Updated: 2025/08/10 15:26:21 by lorlov           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,8 +22,8 @@ static void	update_limits_for_point(int x, int y, t_fdf *fdf);
 bool	init_window(t_map *map, t_fdf *fdf)
 {
 	fdf->map = map; 
-	fdf->zoom = 10;
-	fdf->z_scale = 2;
+	fdf->zoom = 1;
+	fdf->z_scale = 1;
 	fdf->projection = ISO;
 	get_shifts(fdf);
 	fdf->mlx_ptr = mlx_init();
@@ -73,7 +73,7 @@ static void	init_limits(t_fdf *fdf)
 	fdf->limits.max_y = 0;
 	fdf->limits.min_z_scale = 1;
 	fdf->limits.max_z_scale = 10;
-	fdf->limits.min_zoom = 10;
+	fdf->limits.min_zoom = 1;
 	fdf->limits.max_zoom = 30;
 }
 
@@ -104,7 +104,7 @@ static void	update_limits_for_point(int x, int y, t_fdf *fdf)
 
 	p.x = x * fdf->zoom;
 	p.y = y * fdf->zoom;
-	p.z = fdf->map->map_heights[y][x] * fdf->z_scale;
+	p.z = fdf->map->cells[y][x].height * fdf->z_scale;
 	apply_projection(&p.x, &p.y, p.z, fdf);
 	screen_x = p.x;
 	screen_y = p.y;

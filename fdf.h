@@ -6,7 +6,7 @@
 /*   By: lorlov <lorlov@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 17:17:20 by lorlov            #+#    #+#             */
-/*   Updated: 2025/08/08 15:31:36 by lorlov           ###   ########.fr       */
+/*   Updated: 2025/08/10 15:38:56 by lorlov           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,9 +24,16 @@
 # include <math.h>
 # include <stdbool.h>
 
+typedef struct s_cell
+{
+	int	height;
+	int colour;
+}	t_cell;
+
+
 typedef struct s_map
 {
-	int	**map_heights; 
+	t_cell	**cells; 
 	int	width;
 	int	height;
 }	t_map;
@@ -45,6 +52,13 @@ typedef struct s_line
 	int	x1;
 	int	y1;
 }	t_line;
+
+typedef struct s_bbox {
+	int min_x;
+	int min_y;
+	int max_x;
+	int max_y;
+}	tbbox;
 
 typedef struct s_bres_step
 {
@@ -119,7 +133,7 @@ void	switch_projection(t_fdf *fdf, bool *need_redraw);
 
 // utils
 void	free_array(char **array);
-void	free_map_heights(int **height_map, int height);
+void	free_map_cells(t_cell **cells, int height);
 void	free_map(t_map *map);
 void	cleanup(t_fdf *fdf);
 

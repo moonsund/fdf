@@ -6,7 +6,7 @@
 /*   By: lorlov <lorlov@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 17:33:46 by lorlov            #+#    #+#             */
-/*   Updated: 2025/08/06 17:42:29 by lorlov           ###   ########.fr       */
+/*   Updated: 2025/08/10 14:27:08 by lorlov           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,8 @@ void	free_array(char **array)
 {
 	int	i;
 
+	if (!array)
+        return ;
 	i = 0;
 	while (array[i])
 	{
@@ -25,24 +27,26 @@ void	free_array(char **array)
 	free(array);
 }
 
-void	free_map_heights(int **map_heights, int height)
+void free_map_cells(t_cell **cells, int height)
 {
-	int	i;
+    int i;
 
-	i = 0;
-	while (i < height)
-	{
-		free(map_heights[i]);
-		i++;
-	}
-	free(map_heights);
+    if (!cells)
+        return ;
+    i = 0;
+    while (i < height)
+    {
+        free(cells[i]);
+        i++;
+    }
+    free(cells);
 }
 
 void	free_map(t_map *map)
 {
 	if (!map)
 		return ;
-	free_map_heights(map->map_heights, map->height);
+	free_map_cells(map->cells, map->height);
 	free(map);
 }
 

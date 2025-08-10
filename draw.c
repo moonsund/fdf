@@ -6,7 +6,7 @@
 /*   By: lorlov <lorlov@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 17:16:56 by lorlov            #+#    #+#             */
-/*   Updated: 2025/08/08 15:33:04 by lorlov           ###   ########.fr       */
+/*   Updated: 2025/08/10 15:11:57 by lorlov           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,10 +47,10 @@ static void	draw_line_between(t_line line, t_fdf *fdf)
 
 	a.x = line.x0;
 	a.y = line.y0;
-	a.z = fdf->map->map_heights[line.y0][line.x0];
+	a.z = fdf->map->cells[line.y0][line.x0].height;
 	b.x = line.x1;
 	b.y = line.y1;
-	b.z = fdf->map->map_heights[line.y1][line.x1];
+	b.z = fdf->map->cells[line.y1][line.x1].height;
 	project_point(&a, fdf);
 	project_point(&b, fdf);
 	bresenham((t_line){a.x, a.y, b.x, b.y}, fdf);
