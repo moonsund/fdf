@@ -1,6 +1,8 @@
 {
     "files.associations": {
         "fdf.h": "c",
-        "ios": "c"
+        "ios": "c",
+        "__node_handle": "c",
+        "stdbool.h": "c"
     }
 }

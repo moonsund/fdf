@@ -6,7 +6,7 @@
 /*   By: lorlov <lorlov@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 17:18:58 by lorlov            #+#    #+#             */
-/*   Updated: 2025/08/10 15:26:21 by lorlov           ###   ########.fr       */
+/*   Updated: 2025/08/10 23:23:42 by lorlov           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,17 +15,20 @@
 #define WIN_WIDTH 1280
 #define WIN_HEIGHT 800
 
-void		get_shifts(t_fdf *fdf);
-static void	init_limits(t_fdf *fdf);
-static void	update_limits_for_point(int x, int y, t_fdf *fdf);
+bool recenter_if_fits(t_fdf *fdf);
+void	apply_projection(int *x, int *y, int z, t_fdf *fdf);
+static void compute_box(t_fdf *fdf, t_bbox *box);
+static void update_box(t_bbox *box, int sx, int sy);
 
 bool	init_window(t_map *map, t_fdf *fdf)
 {
 	fdf->map = map; 
 	fdf->zoom = 1;
 	fdf->z_scale = 1;
+	fdf->shift_x = 0;
+	fdf->shift_y = 0;
 	fdf->projection = ISO;
-	get_shifts(fdf);
+	recenter_if_fits(fdf);
 	fdf->mlx_ptr = mlx_init();
 	if (!fdf->mlx_ptr)
 		return (false);
@@ -42,39 +45,59 @@ bool	init_window(t_map *map, t_fdf *fdf)
 	return (true);
 }
 
-void	get_shifts(t_fdf *fdf)
+bool recenter_if_fits(t_fdf *fdf)
 {
-	int		x;
-	int		y;
+    t_bbox box;
+    int    w;
+    int    h;
 
+    compute_box(fdf, &box);
+    w = box.max_x - box.min_x + 1;
+    h = box.max_y - box.min_y + 1;
+    if (w > WIN_WIDTH || h > WIN_HEIGHT)
+        return (false);
+    fdf->shift_x = (WIN_WIDTH  - w) / 2 - box.min_x;
+    fdf->shift_y = (WIN_HEIGHT - h) / 2 - box.min_y;
+    return true;
+}
+
+static void compute_box(t_fdf *fdf, t_bbox *box)
+{
+	int x;
+    int y;
+	t_point p;
+
+	box->min_x = WIN_WIDTH;
+    box->min_y = WIN_HEIGHT;
+	box->max_x = 0;
+    box->max_y = 0;
 	y = 0;
-	init_limits(fdf);
 	while (y < fdf->map->height)
 	{
 		x = 0;
 		while (x < fdf->map->width)
 		{
-			update_limits_for_point(x, y, fdf);
+			p.x = x * fdf->zoom;
+			p.y = y * fdf->zoom;
+			p.z = fdf->map->cells[y][x].height * fdf->z_scale;
+			apply_projection(&p.x, &p.y, p.z, fdf);
+			update_box(box, p.x, p.y);
 			x++;
 		}
 		y++;
 	}
-	fdf->shift_x = (WIN_WIDTH - (fdf->limits.max_x - fdf->limits.min_x)) / 2 
-		- fdf->limits.min_x;
-	fdf->shift_y = (WIN_HEIGHT - (fdf->limits.max_y - fdf->limits.min_y)) / 2
-		- fdf->limits.min_y;
 }
 
-static void	init_limits(t_fdf *fdf)
+static void update_box(t_bbox *box, int sx, int sy)
 {
-	fdf->limits.min_x = WIN_WIDTH;
-	fdf->limits.min_y = WIN_HEIGHT;
-	fdf->limits.max_x = 0;
-	fdf->limits.max_y = 0;
-	fdf->limits.min_z_scale = 1;
-	fdf->limits.max_z_scale = 10;
-	fdf->limits.min_zoom = 1;
-	fdf->limits.max_zoom = 30;
+	if (sx < box->min_x)
+        box->min_x = sx;
+	if (sx > box->max_x)
+        box->max_x = sx;
+	if (sy < box->min_y)
+        box->min_y = sy;
+	if (sy > box->max_y)
+        box->max_y = sy;
 }
 
 void	apply_projection(int *x, int *y, int z, t_fdf *fdf)
@@ -94,26 +117,4 @@ void	apply_projection(int *x, int *y, int z, t_fdf *fdf)
 		*x = prev_x;
 		*y = prev_y - z;
 	}
-}
-
-static void	update_limits_for_point(int x, int y, t_fdf *fdf)
-{
-	int		screen_x;
-	int		screen_y;
-	t_point	p;
-
-	p.x = x * fdf->zoom;
-	p.y = y * fdf->zoom;
-	p.z = fdf->map->cells[y][x].height * fdf->z_scale;
-	apply_projection(&p.x, &p.y, p.z, fdf);
-	screen_x = p.x;
-	screen_y = p.y;
-	if (screen_x < fdf->limits.min_x)
-		fdf->limits.min_x = screen_x;
-	if (screen_x > fdf->limits.max_x)
-		fdf->limits.max_x = screen_x;
-	if (screen_y < fdf->limits.min_y)
-		fdf->limits.min_y = screen_y;
-	if (screen_y > fdf->limits.max_y)
-		fdf->limits.max_y = screen_y;
 }

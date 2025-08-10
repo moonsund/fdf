@@ -6,7 +6,7 @@
 /*   By: lorlov <lorlov@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 17:17:20 by lorlov            #+#    #+#             */
-/*   Updated: 2025/08/10 15:38:56 by lorlov           ###   ########.fr       */
+/*   Updated: 2025/08/10 23:39:03 by lorlov           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@
 # include <fcntl.h> // open()
 # include <math.h>
 # include <stdbool.h>
+# include <limits.h>
 
 typedef struct s_cell
 {
@@ -58,7 +59,7 @@ typedef struct s_bbox {
 	int min_y;
 	int max_x;
 	int max_y;
-}	tbbox;
+}	t_bbox;
 
 typedef struct s_bres_step
 {
@@ -112,9 +113,9 @@ typedef struct s_fdf
 
 bool	parse_map(const char *file_path, t_map *map);
 
-// init
+// init_window
 bool	init_window(t_map *map, t_fdf *fdf);
-void	get_shifts(t_fdf *fdf);
+bool	recenter_if_fits(t_fdf *fdf);
 void	apply_projection(int *x, int *y, int z, t_fdf *fdf);
 
 // draw
@@ -124,11 +125,9 @@ void	put_pixel(t_fdf *fdf, int x, int y, unsigned int color);
 // events
 void	handle_events(t_fdf *fdf);
 
-// keys
-void	increase_zoom(t_fdf *fdf, bool *need_redraw);
-void	decrease_zoom(t_fdf *fdf, bool *need_redraw);
-void	increase_z_scale(t_fdf *fdf, bool *need_redraw);
-void	decrease_z_scale(t_fdf *fdf, bool *need_redraw);
+// view_controls
+void	change_zoom(t_fdf *fdf, int step, bool *need_redraw);
+void	change_z_scale(t_fdf *fdf, int step, bool *need_redraw);
 void	switch_projection(t_fdf *fdf, bool *need_redraw);
 
 // utils

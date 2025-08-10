@@ -6,7 +6,7 @@
 /*   By: lorlov <lorlov@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 17:17:05 by lorlov            #+#    #+#             */
-/*   Updated: 2025/08/08 12:53:38 by lorlov           ###   ########.fr       */
+/*   Updated: 2025/08/10 23:45:43 by lorlov           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,13 +31,13 @@ static int	handle_keys(int keycode, t_fdf *fdf)
 
 	need_redraw = false;
 	if (keycode == XK_equal)
-		increase_zoom(fdf, &need_redraw);
+		change_zoom(fdf, +1, &need_redraw);
 	else if (keycode == XK_minus)
-		decrease_zoom(fdf, &need_redraw);
+		change_zoom(fdf, -1, &need_redraw);
 	else if (keycode == XK_0)
-		increase_z_scale(fdf, &need_redraw);
+		change_z_scale(fdf, +1, &need_redraw);
 	else if (keycode == XK_9)
-		decrease_z_scale(fdf, &need_redraw);
+		change_z_scale(fdf, -1, &need_redraw);
 	else if (keycode == XK_Escape)
 		handle_close(fdf);
 	else if (keycode == XK_s)
@@ -57,7 +57,7 @@ static void	redraw(t_fdf *fdf)
 {
 	if (fdf->image.img_ptr)
 		mlx_destroy_image(fdf->mlx_ptr, fdf->image.img_ptr);
-	get_shifts(fdf);
+	recenter_if_fits(fdf);
 	fdf->image.img_ptr = mlx_new_image(fdf->mlx_ptr, WIN_WIDTH, WIN_HEIGHT);
 	fdf->image.img_pixels_ptr = mlx_get_data_addr(fdf->image.img_ptr, 
 			&fdf->image.bits_per_pixel,
